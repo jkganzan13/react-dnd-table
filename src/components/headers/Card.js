@@ -6,10 +6,11 @@ import _ from 'lodash';
 
 const style = {
 	border: '1px dashed gray',
-	padding: '0.5rem 1rem',
-	marginBottom: '.5rem',
 	backgroundColor: 'white',
 	cursor: 'move',
+	width: 100,
+	display: 'inline-block',
+	height: 30
 };
 
 const cardSource = {
@@ -47,16 +48,6 @@ const cardTarget = {
 };
 
 class Card extends Component {
-	static propTypes = {
-		connectDragSource: PropTypes.func.isRequired,
-		connectDropTarget: PropTypes.func.isRequired,
-		isDragging: PropTypes.bool.isRequired,
-		id: PropTypes.any.isRequired,
-		text: PropTypes.string.isRequired,
-		moveCard: PropTypes.func.isRequired,
-		findCard: PropTypes.func.isRequired,
-	};
-
 	render() {
 		const { text, isDragging, connectDragSource, connectDropTarget } = this.props;
 		const opacity = isDragging ? 0 : 1;
@@ -69,5 +60,24 @@ class Card extends Component {
 	}
 }
 
-const Decorators = _.flo
-export default Card
+Card.propTypes = {
+	connectDragSource: PropTypes.func.isRequired,
+	connectDropTarget: PropTypes.func.isRequired,
+	isDragging: PropTypes.bool.isRequired,
+	id: PropTypes.any.isRequired,
+	text: PropTypes.string.isRequired,
+	moveCard: PropTypes.func.isRequired,
+	findCard: PropTypes.func.isRequired,
+};
+
+const Decorators = _.flow(
+	DragSource(ItemTypes.CARD, cardSource, (connect, monitor) => ({
+		connectDragSource: connect.dragSource(),
+		isDragging: monitor.isDragging(),
+	})),
+	DropTarget(ItemTypes.CARD, cardTarget, connect => ({
+		connectDropTarget: connect.dropTarget(),
+	})),
+);
+
+export default Decorators(Card);

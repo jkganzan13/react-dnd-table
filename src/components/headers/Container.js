@@ -5,9 +5,10 @@ import { DropTarget, DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Card from './Card';
 import ItemTypes from './ItemTypes';
+import _ from 'lodash';
 
 const style = {
-	width: 400,
+	border: '1px dotted black',
 };
 
 const cardTarget = {
@@ -15,15 +16,7 @@ const cardTarget = {
 	},
 };
 
-@DragDropContext(HTML5Backend)
-@DropTarget(ItemTypes.CARD, cardTarget, connect => ({
-	connectDropTarget: connect.dropTarget(),
-}))
-export default class Container extends Component {
-	static propTypes = {
-		connectDropTarget: PropTypes.func.isRequired,
-	};
-
+class Container extends Component {
 	constructor(props) {
 		super(props);
 		this.moveCard = this.moveCard.bind(this);
@@ -44,12 +37,6 @@ export default class Container extends Component {
 			}, {
 				id: 5,
 				text: 'EEE',
-			}, {
-				id: 6,
-				text: 'FFF',
-			}, {
-				id: 7,
-				text: 'GGG',
 			}],
 		};
 	}
@@ -95,3 +82,16 @@ export default class Container extends Component {
 		);
 	}
 }
+
+Container.propTypes = {
+	connectDropTarget: PropTypes.func.isRequired,
+};
+
+const Decorators = _.flow(
+	DropTarget(ItemTypes.CARD, cardTarget, connect => ({
+		connectDropTarget: connect.dropTarget(),
+	})),
+	DragDropContext(HTML5Backend)
+);
+
+export default Decorators(Container);
